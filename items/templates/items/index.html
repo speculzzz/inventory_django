@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    <ul>
+    {% for item in item_list %}
+        <li>
+            <a href="{% url 'items:detail' pk=item.pk %}">{{item.name}} / {{item.weight}}</a>
+            ({{item.inventory.name}})
+
+            {% for tag in item.tags.all %}
+                {{tag.name}}
+            {% endfor %}
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'items:create' %}">Create item</a>
+</body>
+</html>

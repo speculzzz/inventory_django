@@ -1,0 +1,59 @@
+services:
+  # PostgreSQL
+  db:
+    image: postgres:14
+    env_file: .env.prod
+#    ports:
+#      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Django + Gunicorn
+  web:
+    build: .
+    env_file: .env.prod
+#    ports:
+#      - "8000:8000"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    command:
+      - sh
+      - -c
+      - |
+        python manage.py migrate
+        python manage.py clearsessions
+        gunicorn --bind 0.0.0.0:8000 inventory.wsgi
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  # Redis
+  redis:
+    image: redis:6
+    env_file: .env.prod
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Nginx
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:

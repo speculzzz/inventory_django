@@ -1,0 +1,14 @@
+.idea/
+.venv/
+.pytest_cache
+__pycache__/
+build/
+dist/
+nginx/ssl/
+staticfiles/
+*.egg-info/
+*.pyc
+*.pyo
+*.pyd
+.coverage
+.env.prod
